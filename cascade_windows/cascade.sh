@@ -16,3 +16,6 @@ while read w_id X Y; do
 done < $temp_wmctrl
 
 rm -f $temp_wmctrl
+
+# TODO 1: calculate resolution and point step
+# TODO 2: group windows
