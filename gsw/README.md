@@ -1,0 +1,4 @@
+gsw
+===
+
+Switch git config

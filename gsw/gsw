@@ -1,0 +1,54 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Term::ANSIColor;
+
+use constant CONFIG_DIR => $ENV{HOME}.'/.config/gsw/';
+
+# Create config dir and default profile
+sub first_run {
+    my @mk_cmd = ( 'mkdir', '-p', CONFIG_DIR );
+    system(@mk_cmd) == 0 or die "Cannot create dir: $!\n";
+
+    if ( -e $ENV{HOME}.'/.gitconfig' ) {
+        print "Create default profile from .gitconfig\n";
+        my @mv_cmd = ( 'mv', $ENV{HOME}.'/.gitconfig', CONFIG_DIR.'00-default' );
+        my @ln_cmd = ( 'ln', '-s', CONFIG_DIR.'00-default', $ENV{HOME}.'/.gitconfig' );
+        system(@mv_cmd) == 0 or die "Cannot move: $!\n";
+        system(@ln_cmd) == 0 or die "Cannot create link: $!\n";
+    }
+    else {
+        new_profile();
+    }
+}
+
+# Create new profile
+sub new_profile {
+    print "pass...\n";
+}
+
+# list available profiles
+sub list_profiles {
+    opendir my $dir, CONFIG_DIR or die "Cannot open config dir: $!\n";
+    while(my $file = readdir($dir)) {
+        print "$file\n" if $file =~ /\d+.+/;
+    }
+}
+
+# Set profile
+sub set_profile {
+    my ($profile) = @_;
+    my @rm_link_cmd = ('rm', '-f', $ENV{HOME}.'/.gitconfig');
+    system(@rm_link_cmd) == 0 or die "$!\n";
+    print "Setting new profile: ".colored( $profile, 'green' )."\n";
+    my @ln_cmd = ('ln', '-s', CONFIG_DIR.$profile, $ENV{HOME}.'/.gitconfig');
+    system(@ln_cmd) == 0 or die "$!\n";
+    print "Profile ".colored( $profile, 'green' )." is set to default\n";
+}
+
+first_run if ( !( -d CONFIG_DIR ) );
+list_profiles if !defined($ARGV[0]) or $ARGV[0] eq 'list';
+set_profile($ARGV[1]) if defined($ARGV[0]) and $ARGV[0] eq 'set' and defined($ARGV[1]);
+
