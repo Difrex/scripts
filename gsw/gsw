@@ -40,10 +40,14 @@ sub list_profiles {
 # Set profile
 sub set_profile {
     my ($profile) = @_;
+
+    # TODO: smart select!
     my @rm_link_cmd = ('rm', '-f', $ENV{HOME}.'/.gitconfig');
     system(@rm_link_cmd) == 0 or die "$!\n";
+
     print "Setting new profile: ".colored( $profile, 'green' )."\n";
     my @ln_cmd = ('ln', '-s', CONFIG_DIR.$profile, $ENV{HOME}.'/.gitconfig');
+    
     system(@ln_cmd) == 0 or die "$!\n";
     print "Profile ".colored( $profile, 'green' )." is set to default\n";
 }
